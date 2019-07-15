@@ -11,7 +11,15 @@ npm i tjjfvi/babel-plugin-mobxtract
 ```
 Add `babel-plugin-mobxtract` to `plugins`.
 
-## Example
+## Examples
+```
+/* @mobxtract */
+let el = <View>{<Text>abc</Text>}</View>;
+let el2 = mobxtract(<Text>xyz</Text>);
+```
+The `<Text>abc</Text>` and the `<Text>xyz</Text>` will be extracted.
+
+## Rationale/Example
 ```jsx
 class ABC extends React.Component {
     

@@ -18,49 +18,58 @@ module.exports = function(babel){
 		},
 		visitor: {
 			JSXExpressionContainer: path => {
-				if(path.node.expression.type !== "JSXElement")
-					return;
-				if(!this.active)
+				if(!this.active || path.node.expression.type !== "JSXElement")
 					return;
 				let Xtraction = path.scope.generateUidIdentifier("Xtracted" + path.node.expression.openingElement.name.name);
-				path.replaceWith(
-					t.jSXExpressionContainer(
-						t.callExpression(
-							t.arrowFunctionExpression(
-								[],
-								t.blockStatement([
-									t.variableDeclaration(
-										"const",
-										[t.variableDeclarator(
-											Xtraction,
-											t.callExpression(
-												this.observer,
-												[t.arrowFunctionExpression(
-													[],
-													path.node.expression
-												)]
-											)
-										)]
-									),
-									t.returnStatement(
-										t.jSXElement(
-											t.jSXOpeningElement(
-												t.jSXIdentifier(Xtraction.name),
-												[],
-												true,
-											),
-											null,
-											[],
-											true
-										)
-									)
-								])
-							),
-							[]
-						)
-					)
+				path.replaceWith(t.jSXExpressionContainer(xtraction(t, Xtraction, this.observer, path.node.expression)));
+			},
+			CallExpression: path => {
+				if(
+					!this.active ||
+					path.node.callee.name !== "mobxtract" ||
+					path.node.arguments.length !== 1 ||
+					path.node.arguments[0].type !== "JSXElement"
 				)
-			}
+					return;
+				let Xtraction = path.scope.generateUidIdentifier("Xtracted" + path.node.arguments[0].openingElement.name.name);
+				path.replaceWith(xtraction(t, Xtraction, this.observer, path.node.arguments[0]));
+			},
 		}
 	}
+}
+
+function xtraction(t, Xtraction, observer, expression){
+	return t.callExpression(
+		t.arrowFunctionExpression(
+			[],
+			t.blockStatement([
+				t.variableDeclaration(
+					"const",
+					[t.variableDeclarator(
+						Xtraction,
+						t.callExpression(
+							observer,
+							[t.arrowFunctionExpression(
+								[],
+								expression
+							)]
+						)
+					)]
+				),
+				t.returnStatement(
+					t.jSXElement(
+						t.jSXOpeningElement(
+							t.jSXIdentifier(Xtraction.name),
+							[],
+							true,
+						),
+						null,
+						[],
+						true
+					)
+				)
+			])
+		),
+		[]
+	)
 }
