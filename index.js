@@ -3,7 +3,6 @@ module.exports = function(babel){
 	let t = babel.types;
 	return {
 		pre: file => {
-			console.log(file.path.get("body"));
 			file.path.get("body")[0].insertBefore(
 				t.importDeclaration(
 					[t.importSpecifier(
@@ -18,7 +17,6 @@ module.exports = function(babel){
 			JSXExpressionContainer: path => {
 				if(path.node.expression.type !== "JSXElement")
 					return;
-				console.log("Found element to xtract!");
 				let Xtraction = path.scope.generateUidIdentifier("Xtracted" + path.node.expression.openingElement.name.name);
 				path.replaceWith(
 					t.jSXExpressionContainer(
