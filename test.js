@@ -7,7 +7,7 @@ let { code } = babel.transform(`
 let a = 5;
 console.log(a);
 let el = <View>{<Text>abc</Text>}</View>;
-let el2 = mobxtract(<Text>xyz</Text>);
+let el2 = mobxtract(<Text key={e}>xyz</Text>);
 `.trim(), {
 	plugins: [plugin, "@babel/plugin-syntax-jsx"]
 });

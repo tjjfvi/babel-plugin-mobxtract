@@ -39,6 +39,7 @@ module.exports = function(babel){
 }
 
 function xtraction(t, Xtraction, observer, expression){
+	let keyAttr = expression.openingElement.attributes.find(a => a.name.name === "key");
 	return t.callExpression(
 		t.arrowFunctionExpression(
 			[],
@@ -60,7 +61,7 @@ function xtraction(t, Xtraction, observer, expression){
 					t.jSXElement(
 						t.jSXOpeningElement(
 							t.jSXIdentifier(Xtraction.name),
-							[],
+							keyAttr ? [keyAttr] : [],
 							true,
 						),
 						null,
