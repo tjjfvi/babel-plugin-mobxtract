@@ -3,6 +3,8 @@
 
 Plugin for babel to simplify extracting JSX elements in `mobx-react` so as to lower rerenders.
 
+**Note that a `/* @mobxtract */` is required for the plugin to activate!**
+
 ## Installation
 ```
 npm i tjjfvi/babel-plugin-mobxtract
@@ -56,6 +58,8 @@ While this approach works, it can quickly become tedious, especially for large c
 
 With `babel-plugin-mobxtract`, you can simply write:
 ```js
+/* @mobxtract */
+// ...
     render(){
         return <div>
             {<span>A: {this.a}</span>}
@@ -63,5 +67,6 @@ With `babel-plugin-mobxtract`, you can simply write:
             {<span>C: {this.c}</span>}
         </div>
     }
+// ...
 ```
 And the plugin will automatically expand the inlined elements to an `observer` component so that it rerenders seperately.

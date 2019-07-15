@@ -3,6 +3,7 @@ let babel = require("@babel/core");
 let plugin = require(".");
 
 let { code } = babel.transform(`
+/* @mobxtract */
 let a = 5;
 console.log(a);
 let el = <View>{<Text>abc</Text>}</View>;
