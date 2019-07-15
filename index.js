@@ -24,22 +24,31 @@ module.exports = function(babel){
 				path.replaceWith(t.jSXExpressionContainer(xtraction(t, Xtraction, this.observer, path.node.expression)));
 			},
 			CallExpression: path => {
+				let { node } = path;
+				let r;
 				if(
 					!this.active ||
-					path.node.callee.name !== "mobxtract" ||
-					path.node.arguments.length !== 1 ||
-					path.node.arguments[0].type !== "JSXElement"
+          node.callee.name !== "mobxtract" ||
+          node.arguments.length !== 1 ||
+          !(node.arguments[0].type === "JSXElement" || (
+          	node.arguments[0].type === "ArrowFunctionExpression" &&
+            node.arguments[0].body.type === "BlockStatement" &&
+            (r = node.arguments[0].body.body.slice().reverse()[0]).type === "ReturnStatement" &&
+            r.argument.type === "JSXElement"
+          ))
 				)
 					return;
-				let Xtraction = path.scope.generateUidIdentifier("Xtracted" + path.node.arguments[0].openingElement.name.name);
-				path.replaceWith(xtraction(t, Xtraction, this.observer, path.node.arguments[0]));
+				let el = r ? r.argument : node.arguments[0];
+				let func = r && node.arguments[0];
+				let Xtraction = path.scope.generateUidIdentifier("Xtracted" + el.openingElement.name.name);
+				path.replaceWith(xtraction(t, Xtraction, this.observer, func ? t.callExpression(func, [Xtraction]) : el, el));
 			},
 		}
 	}
 }
 
-function xtraction(t, Xtraction, observer, expression){
-	let keyAttr = expression.openingElement.attributes.find(a => a.name.name === "key");
+function xtraction(t, Xtraction, observer, expression, el = expression){
+	let keyAttr = el.openingElement.attributes.find(a => a.name.name === "key");
 	return t.callExpression(
 		t.arrowFunctionExpression(
 			[],
@@ -52,7 +61,7 @@ function xtraction(t, Xtraction, observer, expression){
 							observer,
 							[t.arrowFunctionExpression(
 								[],
-								expression
+								expression,
 							)]
 						)
 					)]
